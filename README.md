@@ -69,24 +69,21 @@ GeoPulse/
    - `VITE_API_URL`: Your backend API URL
 4. Deploy
 
-### Backend
+### Backend (Render)
 
-The backend can be deployed to any Node.js hosting service:
+**See detailed instructions**: [DEPLOY_STEPS.md](./DEPLOY_STEPS.md) or [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md)
 
-**Recommended Options:**
-- Railway (easiest)
-- Render
+**Quick Steps:**
+1. Push code to GitHub
+2. Create Web Service in Render dashboard
+3. Set **Root Directory** to `server` ⚠️ **Important!**
+4. Configure environment variables (see deployment guides)
+5. Deploy
+
+**Other hosting options:**
+- Railway
 - Heroku
 - DigitalOcean App Platform
-
-1. Connect your GitHub repository
-2. Configure environment variables:
-   - `MONGODB_URI`
-   - `JWT_SECRET`
-   - `IMAGEKIT_*` keys
-   - `SMTP_*` credentials
-   - `CLIENT_URL`
-3. Deploy
 
 ## Development
 
