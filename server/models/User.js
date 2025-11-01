@@ -1,0 +1,86 @@
+import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
+
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: [true, 'Please provide an email'],
+    unique: true,
+    lowercase: true,
+    trim: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email']
+  },
+  password: {
+    type: String,
+    required: [true, 'Please provide a password'],
+    minlength: 6,
+    select: false // Don't return password by default
+  },
+  firstName: {
+    type: String,
+    required: [true, 'Please provide your first name'],
+    trim: true
+  },
+  lastName: {
+    type: String,
+    required: [true, 'Please provide your last name'],
+    trim: true
+  },
+  phone: {
+    type: String,
+    trim: true
+  },
+  role: {
+    type: String,
+    enum: ['citizen', 'responder', 'admin'],
+    default: 'citizen'
+  },
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      default: [0, 0]
+    }
+  },
+  notificationPreferences: {
+    radius: {
+      type: Number,
+      default: 5000 // 5km in meters
+    },
+    incidentTypes: [{
+      type: String,
+      enum: ['fire', 'flood', 'crime', 'accident', 'infrastructure', 'other']
+    }],
+    enabled: {
+      type: Boolean,
+      default: true
+    }
+  }
+}, {
+  timestamps: true
+})
+
+// Geospatial index for location queries
+userSchema.index({ location: '2dsphere' })
+
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) {
+    return next()
+  }
+  
+  const salt = await bcrypt.genSalt(10)
+  this.password = await bcrypt.hash(this.password, salt)
+  next()
+})
+
+// Method to compare password
+userSchema.methods.matchPassword = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password)
+}
+
+export default mongoose.model('User', userSchema)
